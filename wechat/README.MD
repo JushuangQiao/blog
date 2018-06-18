@@ -107,3 +107,59 @@ CREATE TABLE `user` (
 全部代码可以点击 [这里](https://github.com/JushuangQiao/Python-Demos/tree/master/wechat) 获取！
 
 ## 2.2 发送模板消息
+在小程序的开发过程中，会存在模板消息的发送，具体文档见 [这里](https://developers.weixin.qq.com/miniprogram/dev/api/notice.html#%E6%A8%A1%E7%89%88%E6%B6%88%E6%81%AF%E7%AE%A1%E7%90%86)，模板消息的发送是和语言无关的，这里将简要写一下怎么用 Python 给用户发送模板消息。
+通过文档可以知道，发送的时候，需要使用小程序的 access_token 以及用户提交的 form_id，这里实现小程序的发送也就主要分为三部分:
+     　1. 获取小程序的 access_token;
+     　2. 获取用户提交的 form_id;
+     　3. 给用户发送模板消息。
+
+1. 获取小程序的 access_token，由于失效期为 2 小时，为了避免每次发送的时候都要去请求接口获取，这里可以使用一个定时任务，定时的时间只需要少于两个小时就可以，获取到 access_token 后，存储在 Redis 中，这样在小程序中包括发送模板消息在内，只需要直接读取 Redis 的值就可以了。示例代码如下：
+
+```python
+def get_access_token():
+    payload = {
+        'grant_type': 'client_credential',
+        'appid': 'appid',
+        'secret': 'secret'
+    }
+
+    req = requests.get('https://api.weixin.qq.com/cgi-bin/token', params=payload, timeout=3, verify=False)
+    access_token = req.json().get('access_token')
+    redis.set('ACCESS_TOKEN', access_token)
+```
+
+2. 获取用户提交的 form_id，这里只需要提供一个接口给小程序就可以了，代码示例如下：
+
+```python
+class FormHandler(RequestHandler):
+
+    def post(self):
+        req_data = self.request.body
+        req_data = json.loads(req_data)
+        form_id = req_data.get('form_id')
+        template_push(form_id)  # 使用消息进行模板推送
+```
+
+
+3. 发送模板消息
+
+```python
+def template_push(form_id):
+    data = {
+        "touser": 'openid',
+        "template_id": 'template_id',
+        "page": 'pages/index/index',
+        "form_id": form_id,
+        "data": {
+            'keyword1': {
+                'value': 'value1'
+            }
+        },
+        "emphasis_keyword": ''
+    }
+    access_token = redis.get('ACCESS_TOKEN')
+    push_url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={}'.format(access_token)
+    requests.post(push_url, json=data, timeout=3, verify=False)
+```
+
+至此，用户就会收到消息了，详细代码点击 [这里](https://github.com/JushuangQiao/Python-Demos/tree/master/wechat)
