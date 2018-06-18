@@ -112,9 +112,10 @@ CREATE TABLE `user` (
 
 在小程序的开发过程中，会存在模板消息的发送，具体文档见 [这里](https://developers.weixin.qq.com/miniprogram/dev/api/notice.html#%E6%A8%A1%E7%89%88%E6%B6%88%E6%81%AF%E7%AE%A1%E7%90%86)，模板消息的发送是和语言无关的，这里将简要写一下怎么用 Python 给用户发送模板消息。
 通过文档可以知道，发送的时候，需要使用小程序的 access_token 以及用户提交的 form_id，这里实现小程序的发送也就主要分为三部分:
-     　1. 获取小程序的 access_token;
-     　2. 获取用户提交的 form_id;
-     　3. 给用户发送模板消息。
+    
+    1. 获取小程序的 access_token;
+    2. 获取用户提交的 form_id;
+    3. 给用户发送模板消息。
 
 1. 获取小程序的 access_token，由于失效期为 2 小时，为了避免每次发送的时候都要去请求接口获取，这里可以使用一个定时任务，定时的时间只需要少于两个小时就可以，获取到 access_token 后，存储在 Redis 中，这样在小程序中包括发送模板消息在内，只需要直接读取 Redis 的值就可以了。示例代码如下：
 
