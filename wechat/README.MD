@@ -112,7 +112,7 @@ CREATE TABLE `user` (
 
 在小程序的开发过程中，会存在模板消息的发送，具体文档见 [这里](https://developers.weixin.qq.com/miniprogram/dev/api/notice.html#%E6%A8%A1%E7%89%88%E6%B6%88%E6%81%AF%E7%AE%A1%E7%90%86)，模板消息的发送是和语言无关的，这里将简要写一下怎么用 Python 给用户发送模板消息。
 通过文档可以知道，发送的时候，需要使用小程序的 access_token 以及用户提交的 form_id，这里实现小程序的发送也就主要分为三部分:
-    
+
     1. 获取小程序的 access_token;
     2. 获取用户提交的 form_id;
     3. 给用户发送模板消息。
