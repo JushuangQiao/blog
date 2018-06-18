@@ -1,7 +1,8 @@
 # 2. 微信小程序相关的内容
 
 ## 2.1 实现小程序的登录
-   小程序可以通过官方提供的登录能力来获取用户身份的标示，具体文档可以参考 [这里](https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html)，通过流程时序可以看到，对于需要和前端配合的服务端开发，主要实现的就是通过小程序提供的 code 换取用户的 openid 和 session_key，并用换取到的 openid 和 secret_key 作为自定义的登录态。分析后得知，作为小程序后端的开发，主要实现以下几部分内容:
+
+小程序可以通过官方提供的登录能力来获取用户身份的标示，具体文档可以参考 [这里](https://developers.weixin.qq.com/miniprogram/dev/api/api-login.html)，通过流程时序可以看到，对于需要和前端配合的服务端开发，主要实现的就是通过小程序提供的 code 换取用户的 openid 和 session_key，并用换取到的 openid 和 secret_key 作为自定义的登录态。分析后得知，作为小程序后端的开发，主要实现以下几部分内容:
 
  	* 提供一个 HTTP 接口，供小程序方使用，传递 code；<br>
  	* 换取用户身份标识；<br>
@@ -106,7 +107,9 @@ CREATE TABLE `user` (
 ```
 全部代码可以点击 [这里](https://github.com/JushuangQiao/Python-Demos/tree/master/wechat) 获取！
 
+
 ## 2.2 发送模板消息
+
 在小程序的开发过程中，会存在模板消息的发送，具体文档见 [这里](https://developers.weixin.qq.com/miniprogram/dev/api/notice.html#%E6%A8%A1%E7%89%88%E6%B6%88%E6%81%AF%E7%AE%A1%E7%90%86)，模板消息的发送是和语言无关的，这里将简要写一下怎么用 Python 给用户发送模板消息。
 通过文档可以知道，发送的时候，需要使用小程序的 access_token 以及用户提交的 form_id，这里实现小程序的发送也就主要分为三部分:
      　1. 获取小程序的 access_token;
