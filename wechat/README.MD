@@ -167,3 +167,34 @@ def template_push(form_id):
 ```
 
 至此，用户就会收到消息了，详细代码点击 [这里](https://github.com/JushuangQiao/Python-Demos/tree/master/wechat)
+
+## 2.3 用户信息解密
+
+根据微信提供的[文档](https://developers.weixin.qq.com/miniprogram/dev/api/signature.html#wxchecksessionobject)，
+后端要和小程序本身进行交互，只需要提供一个接口获取到加密数据和 iv 就可以了，获取到后，直接可以使用示例代码进行解密，如下：
+
+```python
+import base64
+import json
+from Crypto.Cipher import AES
+
+def decrypt(app_id, session_key, encrypted_data, iv):
+    # base64 decode
+    session_key = base64.b64decode(session_key)
+    encrypted_data = base64.b64decode(encrypted_data)
+    iv = base64.b64decode(iv)
+
+    cipher = AES.new(session_key, AES.MODE_CBC, iv)
+
+    try:
+        decrypted = json.loads(_unpad(cipher.decrypt(encrypted_data)))
+    except Exception as e:
+        logging.warning('decrypt failed {}'.format(e))
+        return None
+    if decrypted['watermark']['appid'] != app_id:
+        return None
+    return decrypted
+
+def _unpad(s):
+    return s[:-ord(s[len(s)-1:])]
+```
