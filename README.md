@@ -2,6 +2,7 @@
 
 ### 1. [Python](/python)
 > #### a [为什么 Python 中的 True 等于 1](./python/true_1.md)
+
 ### 2. [微信小程序](/wechat)
 > #### a [实现小程序的登录](./wechat#2.1-实现小程序的登录)
 > #### b [发送模板消息](./wechat#2.2-发送模板消息)
