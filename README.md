@@ -12,3 +12,4 @@
 > #### c [用户信息解密](./wechat#2.3-用户信息解密)
 
 ### 4. [文章翻译](/translation)
+> #### a [安全编程指南](./translation/secure_coding_guidelines.md)
