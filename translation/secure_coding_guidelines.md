@@ -91,3 +91,35 @@ The username or password you entered is not valid
 #### 1.9 老的密码哈希
 * 超过一年的密码哈希值应该从系统中删除；
 * 在密码哈希迁移之后，如果用户在三个月内没有登录进行转换，则老的密码哈希值应该被删除。
+
+#### 1.10 迁移
+下面的迁移进程使用了不同于上面提到的标准哈希的哈希算法，用来迁移应用。这种方法的好处是能够在用户不重置密码的情况下，立即更新到强的、推荐的哈希算法。
+
+##### 1.10.1 迁移过程：
+
+迁移数据库全部密码哈希实体的过程如下，这是一次性的离线迁移。存储在数据库中的格式是： {algo}${salt}${migration_hash}
+
+>
+* {algo} is {sha512+MD5},
+* {salt} is a salt unique per-user,
+* {migration_hash} is SHA512(salt + existingPasswordHash)
+
+新帐号或者密码改变的帐号用了上面提到的[标准哈希进程](https://github.com/JushuangQiao/blog/blob/master/translation/secure_coding_guidelines.md#18-密码存储)。
+
+##### 1.10.2 新的登录过程
+
+1. 尝试使用新的哈希登录。当然这会涉及到执行旧密码哈希过程，然后加盐，最终执行 sha512；
+
+	>
+	Example: Old password hash process is md5
+Migration Hash = sha512(perUserSalt + md5(user supplied password))
+
+2. 如果迁移后的哈希认证成功，则用用户提供的密码并根据上面定义的算法计算新哈希，并用新哈希重写迁移后的哈希。
+3. 如果认证失败，则用户可能已经用了新哈希，继续用新哈希尝试，还失败的话则提示错误。
+
+### 2. Session 管理
+
+攻击者的关注点：Session 劫持，Session 固定，暴力破解合法 Session IDs。
+
+#### Session ID 长度
+Session token 至少需要 128 位。
