@@ -123,3 +123,27 @@ Migration Hash = sha512(perUserSalt + md5(user supplied password))
 
 #### Session ID 长度
 Session token 至少需要 128 位。
+
+#### 生成 Session ID
+Session token 应该尽可能由服务端处理，或者通过加密的安全随机数生成。
+
+#### 不活跃超时
+
+Session 在授权后，超过一定的时间不活跃应该设置超时，建议时间为 15 分钟。
+
+#### 安全标志位
+安全标志位应该在设置 cookie 时产生，这会告诉浏览器不要通过 HTTP 发送 cookie。安全标志位的目的是避免用户点击了一些链接后，cookie 意外泄漏。
+
+[一个示例](https://wiki.mozilla.org/WebAppSec/Secure_Coding_Details#Secure_Flag)
+
+#### HTTP-Only 标志
+该标志是为了阻止恶意脚本(XSS)访问用户 Session。
+
+#### 登陆
+登陆时应该重新设置 Session，避免通过 XSS 在相关域名或者子域名下的 Session 固定。
+
+#### 登出
+登出后 Session 在服务端应该失效，在客户端需要重写或者过期 Session 值。
+
+### 3. 访问控制
+
