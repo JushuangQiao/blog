@@ -211,7 +211,7 @@ Session 在授权后，超过一定的时间不活跃应该设置超时，建议
 关注点：XSS 以及各种（SQL/OS/LDAP/XML）注入。
 
 #### 5.1 阻止 XSS
-* 当返回 HTML 页面的时候，用户输入的任何数据都需要被编码，以防止恶意数据（如 XSS）的执行。例如 &lt;script&gt; 将会返回 &amplt;script&gt;
+* 当返回 HTML 页面的时候，用户输入的任何数据都需要被编码，以防止恶意数据（如 XSS）的执行。例如 &lt;script&gt; 将会返回 &amplt;script&ampgt;
 * 只对页面中插入用户输入的数据的地方进行具体编码。例如对于 HTML body 中的数据进行 HTML 实体编码就比较合适，然而对于脚本中的用户数据则需要使用 js 进行编码。
 
 [这是一个阻止 XSS 的详细信息。](https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet)
