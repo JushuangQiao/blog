@@ -134,7 +134,7 @@ Session 在授权后，超过一定的时间不活跃应该设置超时，建议
 #### 安全标志位
 安全标志位应该在设置 cookie 时产生，这会告诉浏览器不要通过 HTTP 发送 cookie。安全标志位的目的是避免用户点击了一些链接后，cookie 意外泄漏。
 
-[一个示例](https://wiki.mozilla.org/WebAppSec/Secure_Coding_Details#Secure_Flag)
+[一个示例](https://wiki.mozilla.org/WebAppSec/Secure_Coding_Details#Secure_Flag)，或者看[翻译](https://github.com/JushuangQiao/blog/blob/master/translation/secure_coding_detail.md)
 
 #### HTTP-Only 标志
 该标志是为了阻止恶意脚本(XSS)访问用户 Session。
@@ -179,12 +179,12 @@ Session 在授权后，超过一定的时间不活跃应该设置超时，建议
 
 * 用户名：包含字符、数字和特殊字符，3-10 个字符长度；
 * 名字：字母、单撇号、下划线，1-30 个字符；
-* 简单的 US 压缩嘛：数字，5 个字符。
+* 简单的 US 压缩码：数字，5 个字符。
 
 注意：这仅仅是一个例子，具体的输入验证需要根据你的具体情况调整。
 
 #### 4.2 javascript 验证 VS 服务端验证
-需要注意的是袭击者能够通过禁用 js 或者 Web 代理来绕过 js 验证，所以需要 js 验证的同时，服务端也要进行验证。
+需要注意的是攻击者能够通过禁用 js 或者 Web 代理来绕过 js 验证，所以需要 js 验证的同时，服务端也要进行验证。
 
 #### 4.3 使用积极的方法
 攻击者的种类的变化多端的，可以用正则表达式定义好接受的输入，并拒绝任何其他的不符要求的输入。换句话说，我们应该 “接受合法的输入” 而不是 “拒绝不合法的输入”。下面是例子：
@@ -206,3 +206,14 @@ Session 在授权后，超过一定的时间不活跃应该设置超时，建议
 验证用户输入的富文本非常困难，可以考虑更合适的方法，例如 [HTML Purifier(PHP)](http://htmlpurifier.org),[AntiSamy](http://htmlpurifier.org) 和 [bleach(Python)](https://github.com/mozilla/bleach)。
 
 ### 5. 输出编码
+输出编码是组织 XSS 和注入攻击的主要方法，输入验证虽然帮助减少了脏数据，但只是一种二次验证。
+
+关注点：XSS 以及各种（SQL/OS/LDAP/XML）注入。
+
+#### 5.1 阻止 XSS
+* 当返回 HTML 页面的时候，用户输入的任何数据都需要被编码，以防止恶意数据（如 XSS）的执行。例如 &lt;script&gt; 将会返回 &amplt;script&gt;
+* 只对页面中插入用户输入的数据的地方进行具体编码。例如对于 HTML body 中的数据进行 HTML 实体编码就比较合适，然而对于脚本中的用户数据则需要使用 js 进行编码。
+
+[这是一个阻止 XSS 的详细信息。](https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet)
+
+#### 5.2 阻止 OS 注入
