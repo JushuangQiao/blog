@@ -217,3 +217,16 @@ Session 在授权后，超过一定的时间不活跃应该设置超时，建议
 [这是一个阻止 XSS 的详细信息。](https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet)
 
 #### 5.2 阻止 OS 注入
+* 尽可能阻止用户数据进入操作系统；
+* 确保强大的字符转义，防止用户添加额外的可以被操作系统执行的字符（例如在数据后面链接上 |，这样就可以执行另一个命令了）。记住在进行转义的时候，要使用积极的方式，这是一个[例子](https://github.com/esapi/esapi-java-legacy)。
+
+[点此了解更多](https://www.owasp.org/index.php/Reviewing_Code_for_OS_Injection)。
+
+#### 5.3 阻止 XML 注入
+* 和 OS 注入类似，除了输入验证之外，也要用一些合适的方法转义能被解释为 XML 的字符，例如：< > " ' &；
+* 如果收到原始的 XML 文件需要验证，可以联系 infrasec@mozilla.com 进行讨论。
+
+### 6. 跨域
+关注点：CSRF、Clickjacking、第三方脚本、和第三方进行的不安全交互。
+
+#### 6.1 阻止 CSRF
