@@ -323,5 +323,45 @@ Session 在授权后，超过一定的时间不活跃应该设置超时，建议
   * ".htaccess" 和  ".htpasswd" 提供给服务器个人路径基础的配置选项，也需要被禁止。点击 [这里](https://en.wikipedia.org/wiki/.htaccess) 了解更多。
 
 #### 9.2 图片上传
+上传验证
 
+* 使用图片重写库去验证图片是合法的，并且过滤掉图片中任何无关的内容；
+* 依赖于监测到的上传的图片的内容类型去设置被存储图片的拓展类型是合法的（例如不要仅仅信任来自于上传图片的 header);
+* 确保上传的图片类型在可信的图片类型之内，例如 jpg、png 等。
 
+#### 9.3 压缩上传
+上传验证
+
+* 确保上传的压缩文件的大小不超过限制；
+* 确保上传的文件类型合法，例如 zip、rar、gzip 等；
+* 对于结构化上传，确保压缩文件中包含需要的文件。
+
+### 10. 错误处理
+关注点：敏感信息泄漏、系统信息泄露、其他漏洞的利用。
+
+#### 10.1 用户可见的错误消息
+用户可见的错误提示不应该包含系统、诊断调试信息。
+
+#### 10.2 Debug 方式
+Debug 方式是许多应用或者框架支持的，并且在网站应用中是可以接受的，然而仅仅应该在调试阶段使用。
+
+#### 10.3 格式化错误信息
+错误信息经常被记录成文本文件或者其他在浏览器中可见的文件
+
+* 文本文件：确保任何换行符（%0A%0C）能够被正确处理，避免日志伪造；
+* Web 日志文件：查看日志的时候，确保任何 HTML 字符能被正确编码，防止 XSS.
+
+#### 10.4 推荐的错误处理方式
+* 只在系统日志中存储必须的错误信息；
+* 原始的错误信息对用户不可见；
+* 如果需要，把错误日志的映射码提供给用户，然后根据用户提供的错误码诊断问题。
+
+### 11. 更多阅读
+* [OWASP Top 10](https://www.owasp.org/index.php/File:OWASP_T10_-_2010_rc1.pdf)
+* [OWASP Cheat Sheet](https://www.owasp.org/index.php/OWASP_Cheat_Sheet_Series)
+* [OWASP Guide Project](https://www.owasp.org/index.php/OWASP_Guide_Project)
+* [Php Sec library](http://phpsec.org/library/)
+* [Django Security](https://djangobook.com/en/2.0/chapter20/)
+* [Ruby Security](http://guides.rubyonrails.org/security.html)
+
+### 12. 联系人
