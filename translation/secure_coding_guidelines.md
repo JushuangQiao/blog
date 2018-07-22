@@ -283,5 +283,45 @@ Session 在授权后，超过一定的时间不活跃应该设置超时，建议
 #### 7.3 使用 STS
 只要有可能，就要使用 STS
 
-### 8. 内容安全政策（CSP)
+### 8. 内容安全策略（CSP)
+开发没有内连 js 的网站更容易适应 CSP。[链接](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+
+#### 8.1 日志
+[看这里](https://wiki.mozilla.org/Security/Users_and_Logs)
+
+#### 8.2 管理登陆界面
+下面是对任何网站都通用的登陆界面管理内容。
+
+1. 采取控制措施防止暴力攻击（下面的方法都是合适的）；
+ * 在 ssl vpn 后面管理界面；
+ * 帐号登出；
+ * 5 次失败之后进行图像识别；
+ * 管理界面进行 IP 限制。
+
+2. 登陆页和管理页面只能通过 HTTPS 访问，任何 HTTP 访问都被重定向到 HTTPS；
+3. Session ID 使用安全标志位；
+4. Session ID 使用 HTTPOnly；
+
+[查看配置](https://wiki.mozilla.org/WebAppSec/Secure_Coding_Details#Word_Press)
+
+
+### 9. 上传
+关注点：恶意用户可能会上传包含 js、HTML 或者其他可执行代码的内容，任意的文件覆盖；
+
+#### 9.1 通用上传
+1. 上传验证
+	* 用数输入的任何文件都要进行验证，确保使用的是预期的文件名；
+	* 确保上传的文件大小不超过限制。
+2. 上传存储
+ * 重新命名文件进行存储，不要在文件中或临时文件中使用用户输入的任何字符；
+ * 把用户上传的文件进行分别存储（例如 .net 或者 .org），并且需要分析文档中的恶意内容（例如反恶意分析，静态分析等）。
+3. 对上传内容提供通用服务
+  * 确保上传的图片使用了正确的类型（例如 image/jpeg、application/x-xpinstall）。
+4. 注意特殊的文件
+  * 对特定的文件类型和拓展名进行上传的白名单设置。虽然如此，也需要意识到下面的文件类型可能会造成安全问题；
+  * “crossdomain.xml” 允许跨域数据在 Flash, Java and Silverlight 中下载。如果网站中对这种脚本进行了授权，可能会导致跨域数据泄漏或者 CSRF 攻击。这种脚本可能会对不同版本的插件有各种复杂的依赖问题，最好的方法就是直接禁止文件被命名为 "crossdomain.xml" 或者 "clientaccesspolicy.xml"。
+  * ".htaccess" 和  ".htpasswd" 提供给服务器个人路径基础的配置选项，也需要被禁止。点击 [这里](https://en.wikipedia.org/wiki/.htaccess) 了解更多。
+
+#### 9.2 图片上传
+
 
