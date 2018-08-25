@@ -79,7 +79,7 @@ def spread_to_spread(start, end, step):  # 数据分发函数
         batch_spread.delay(start, end)
 
 
-@app.task
+@app.task    # 所谓的并发，需要开启多个 celery 实例同时处理数据。
 def dispatch(start, end):  # 根据 ID 字段去表中取出一部分数据进行操作
     users = UserDAO.get_by_ids(start, end)
     for user in users:
