@@ -16,13 +16,49 @@
 3. 使用并发，可以保证要执行的数据最快的执行完成，充分利用机器资源；
 4. 由于按照 ID 段来异步扫描数据表，任何一段距离的失败都不会对其他 ID 造成影响。
 
-代码示例：TODO 接入异步 celery
+代码示例:
 
 ```python
+
+from celery import Celery
+from sqlalchemy import and_, func, select
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+
+# mysql 相关设置
+engine = create_engine('mysql://root:@localhost/wechat')
+conn = engine.connect()
+
+Base = declarative_base()
+Base.metadata.reflect(engine)
+tables = Base.metadata.tables
+
+# celery 配置示例
+app = Celery('tasks', backend='redis://localhost', broker='redis://localhost')
 
 MAX_MYSQL_READ_RECORDS = 1000
 
 
+class UserDAO(object):
+
+    table = tables.user
+
+    @classmethod
+    def get_max_id(cls):
+        sql = sql_select([func.max(cls.table.c.id)])
+        return conn.execute(sql).scalar()
+
+    @classmethod
+    def get_by_ids(cls, start, end):
+        sql = sql_select().where(
+            and_(cls.table.c.id > start,
+                 cls.table.c.id <= end
+                 )
+        )
+        return conn.execute(sql).fetchall()
+
+
+@app.task
 def batch_spread(start, end):  # 入口函数
     distance = end - start
     if distance > MAX_MYSQL_READ_RECORDS:  # 数据量大，继续进行数据分发
@@ -43,6 +79,7 @@ def spread_to_spread(start, end, step):  # 数据分发函数
         batch_spread.delay(start, end)
 
 
+@app.task
 def dispatch(start, end):  # 根据 ID 字段去表中取出一部分数据进行操作
     users = UserDAO.get_by_ids(start, end)
     for user in users:
@@ -55,5 +92,5 @@ def send_message(name):  # 具体需要做的业务方法
 
 
 if __name__ == '__main__:':
-    batch_spread(UserDAO.get_min_id(), UserDAO.get_max_id())
+    batch_spread.delay((UserDAO.get_min_id(), UserDAO.get_max_id()))
 ```
