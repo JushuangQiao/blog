@@ -10,8 +10,36 @@
 
 ### 实现
 
-1. zset 最多能存储多少元素？TODO 需要调研
+#### 1. zset 最多能存储多少元素？TODO 需要调研
 
-2. 如何使用 zset 更新用户数据，获取用户分数和排名，获取排行榜前 100 名；
+#### 2. 如何使用 zset 更新用户数据，获取用户分数和排名，获取排行榜前 100 名；
 
-3. 怎么实现负载均衡？
+```python
+# 更新用户数据
+def update_user_data(user_id, score):
+	redis_key = 'RANKING'
+    master_redis.zadd(redis_key, score, user_id)  # 对 master 进行写入操作
+
+# 获取用户分数和排名
+def get_user_ranking(user_id):
+    redis_key = 'RANKING'
+    with slave_redis.pipeline() as pipeline:
+        pipeline.zscore(redis_key, member_id)
+        pipeline.zrevrank(redis_key, member_id)
+        results = pipeline.execute()
+        score = results[0] or 0
+        ranking = results[1]
+    return {
+        'score': int(score),
+        'ranking': ranking+1 if ranking is not None else None
+    }
+
+# 获取某个区间的用户排行
+def get_rankings(start=0, end=100):
+	redis_key = 'RANKING'
+	return [{'user_id': item[0], 'score': item[1]} for item in slave_redis.zrevrange(redis_key, start, end, withscores=True, score_cast_func=int)]
+```
+
+#### 3. 怎么实现负载均衡？
+
+用户游戏的排行榜读多写少，可以对 master 进行写入操作，然后多个 slave 进行读取操作。
