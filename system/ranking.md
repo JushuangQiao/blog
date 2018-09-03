@@ -43,3 +43,11 @@ def get_rankings(start=0, end=100):
 #### 3. 怎么实现负载均衡？
 
 用户游戏的排行榜读多写少，可以对 master 进行写入操作，然后多个 slave 进行读取操作。
+
+```python
+import random
+from redis import StrictRedis
+
+master_redis = StrictRedis.from_url(conf['redis']['master'])
+slave_redis = StrictRedis.from_url(random.choice(conf['slaves'))
+```
