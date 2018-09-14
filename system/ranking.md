@@ -10,7 +10,11 @@
 
 ### 实现
 
-#### 1. zset 最多能存储多少元素？TODO 需要调研
+#### 1. zset 最多能存储多少元素?
+The max number of members in a set is 232 - 1 (4294967295, more than 4 billion of members per set).
+Redis Sorted Sets are, similarly to Redis Sets, non repeating collections of Strings.
+所以 Redis 的有序集合一般情况下完全够用了。
+
 
 #### 2. 如何使用 zset 更新用户数据，获取用户分数和排名，获取排行榜前 100 名；
 
