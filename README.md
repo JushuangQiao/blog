@@ -29,3 +29,4 @@
 
 ### 8. [文章翻译](/translation)
 > #### a [安全编程指南](./translation/secure_coding_guidelines.md)
+> #### b [MySQL5.6 索引最佳实践](./translation/mysql_index.md)
