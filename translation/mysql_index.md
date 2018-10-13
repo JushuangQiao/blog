@@ -67,9 +67,39 @@
 	- Useful for sorting, Covering Index.
 
 ### 13. MySQL 怎么使用索引？
-* 数据查看；
+* 数据查询；
 * 排序；
 * Avoiding reading “data”；
 * 特定优化。
 
-### 14. 在数据查看中使用索引
+### 14. 在数据查询中使用索引
+
+1. 用了索引 LAST_NAME
+	```MySQL
+	SELECT * FROM EMPLOYEES WHERE LAST_NAME=“Smith”;
+	```
+
+2. 用了索引  (DEPT,LAST_NAME)
+   ```MySQL
+	SELECT * FROM EMPLOYEES WHERE
+	LAST_NAME=“Smith” AND
+	DEPT=“Accounting”
+	```
+	> 这里虽然索引字段顺序和查询的顺序颠倒，依然会走索引，不是因为最左匹配不走索引。
+3. 多列索引会变的困难，对于索引 (A,B,C)：
+	* 下面的条件会走索引:
+		- A>5
+		- A=5 AND B>6
+		- A=5 AND B=6 AND C=7
+		- A=5 AND B IN (2,3) AND C>5
+	* 下面的条件不走索引，因为不符合最左匹配，缺少第一列
+	   - B > 5
+	   - B = 6 AND C = 7
+
+	   > 在 MySQL5.7 中使用 explain 执行了一下，发现还是会走索引的，估计 MySQL 底层做了什么优化？
+
+	* 下面条件会走部分索引
+	 	- A>5 AND B=2
+	 	- A=5 AND B>6 AND C=2
+
+4. SQL 优化的第一原则：
