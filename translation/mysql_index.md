@@ -75,12 +75,12 @@
 ### 14. 在数据查询中使用索引
 
 1. 用了索引 LAST_NAME
-	```MySQL
+	```
 	SELECT * FROM EMPLOYEES WHERE LAST_NAME=“Smith”;
 	```
 
 2. 用了索引  (DEPT,LAST_NAME)
-   ```MySQL
+   ```
 	SELECT * FROM EMPLOYEES WHERE
 	LAST_NAME=“Smith” AND
 	DEPT=“Accounting”
@@ -103,3 +103,32 @@
 	 	- A=5 AND B>6 AND C=2
 
 4. SQL 优化的第一原则：
+
+	MySQL 在多列索引中，一遇到 （<,>,between）就会停止使用 key，然而能继续使用 key 直到 in 范围的右边。
+
+### 15. 在排序中使用索引
+1.  排序
+	```
+	SELECT * FROM PLAYERS ORDER BY SCORE DESC LIMIT 10
+	```
+	- 该 SQL 会使用建立在 SCORE 列上的 索引；
+	- 如果排序的时候没有使用索引，将会导致非常耗时的文件排序；
+	- 在排序中经常会考虑组合索引， 例如下面的 SQL 可以考虑(COUNTRY,SCORE) 索引：
+	```
+	SELECT * FROM PLAYERS WHERE COUNTRY=“US” ORDER BY 	SCORE DESC LIMIT 10
+	```
+
+2. 使用多列索引进行高效的排序，在排序中使用索引有很多的限制，对于 KEY(A，B）:
+	* 下面排序会使用索引：
+		- ORDER BY A：主列索引；
+		- A=5 ORDER BY B：通过第一列过滤数据，第二列进行排序；
+		- ORDER BY A DESC, B DESC：用相同的排序进行排序；
+		- A>5 ORDER BY A：主列上进行查询和排序
+	* 下面的语句不会使用索引：
+		- ORDER BY B ：非主列索引排序；
+		- A>5 ORDER BY B：第一列上使用范围，第二列进行排序；
+		- A IN(1,2) ORDER BY B：第一列上用 IN；
+		- ORDER BY A ASC, B DESC：两列的排列顺序不同。
+
+3. 排序中使用索引的一些规则：
+	*
