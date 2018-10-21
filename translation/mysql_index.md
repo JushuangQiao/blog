@@ -130,5 +130,40 @@
 		- A IN(1,2) ORDER BY B：第一列上用 IN；
 		- ORDER BY A ASC, B DESC：两列的排列顺序不同。
 
-3. 排序中使用索引的一些规则：
-	*
+3. 使用索引进行排序的规则
+	* 两列的排列顺序不能不一致；
+	* 非排序的列中索引部分只能用 =，in 也不能用。
+
+### 16. 避免读数据
+
+1. 覆盖索引:对特定的查询使用索引，而不是对索引类型使用索引；
+2. 仅仅读取索引，而不是读数据：索引比数据小；
+3. SELECT STATUS FROM ORDERS WHERE CUSTOMER_ID=123 使用索引 KEY(CUSTOMER_ID,STATUS)；
+4. 通过索引读取数据是有顺序的，而通过数据指针读取数据经常是随机的。
+
+### 17. 特定优化
+
+1. Min/Max 优化
+	* 索引对 Min/Max 聚集函数有帮助，当然也只对这俩有作用；
+		- SELECT MAX(ID) FROM TBL;
+		- SELECT MAX(SALARY) FROM EMPLOYEE GROUP BY DEPT_ID：
+
+		>
+		- Will benefit from (DEPT_ID,SALARY) index;
+		- “Using index for group-by”
+
+2. 索引和 JOIN
+	* 在 MySQL 中使用 join 会导致嵌套循环，例如下面语句会遍历 POSTS 表找到 Peter 的所有文章，然后根据找到的文章从 COMMENTS 表中找到该文章的索引评论；
+
+		>
+		SELECT * FROM POSTS,COMMENTS WHERE
+		AUTHOR=“Peter” AND COMMENTS.POST_ID=POSTS.ID
+	* 在简单查询的时候才会使用索引，例如上面的语句不会使用 POST.ID 这个索引；
+	* 重新设计 join 中没法进行索引的语句也是非常重要的。
+
+### 18. 表中存在多个索引
+1. MySQL 中可以存在多个索引：会有索引合并；
+2. SELECT * FROM TBL WHERE A=5 AND B=6：该语句能分别使用在 A 和 B 上的索引，但是在 （A,B) 上建立索引是更好的；
+3. SELECT * FROM TBL WHERE A=5 OR B=6：该语句使用两个独立的索引，但不会使用在（A,B) 上建立的索引
+
+### 19. 前缀索引
