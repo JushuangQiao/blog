@@ -3,6 +3,7 @@
 ### 1. [Python 语言](/python)
 > #### a [为什么 Python 中的 True 等于 1](./python/true_1.md)
 > #### b [模块初始化的时候发生了什么](./python/module_init.md)
+> #### c [装饰器的执行顺序](./python/decorator.md)
 
 ### 2. [简单系统设计](/system)
 > #### a [使用 Redis 的 zset 实现一个排行榜](./system/ranking.md)
