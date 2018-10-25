@@ -176,11 +176,26 @@
 5. 选择合适的前缀长度是一个问题。
 
 ### 20. MySQL 5.6 新特性
-1. 很多优化上的改进：
+1. 很多优化器上的改进：
 	- 这些改进会使你的查询更加自动；
 	- join_buffer_size 有了新的意义，意味着该值大于 32 M，会有比较好的效果；
 
-2. 本文专注于索引设计上的实践，其中最重要的一个是 ICP（索引状态下推）。
+2. 本文专注于索引设计上的实践，其中最重要的一个是 ICP（索引条件下推）。
 
 ### 21. 理解 ICP
+1. 下推一些过滤条件到引擎层：NAME LIKE “%ill%” 不能使用 range 过滤；
+2. 更加灵活的覆盖索引：一些过滤在引擎层就完成了；
+3. 5.5 之前：在范围内就会读取全部的数据。
+
+### 22. ICP 举例
+1. SELECT A … WHERE B=2 AND C LIKE “%ill%’
+	- MySQL 5.5 and below：
+		* KEY (B) – Traditional. Using index for range only
+		* KEY (B,C,A) - 覆盖索引，用到的列都在索引中；
+	- MySQL 5.6
+		* KEY(B,C)：通过 B 找到数据范围; 会根据 C 读取所有的列查找满足条件的数据；
+2. SELECT * …WHERE A=5 and C=6 ;
+	- KEY (A,B,C)：Will scan all index entries with A=5 not all rows。
+
+### 23. 怎么选择使用哪一个索引？
 
