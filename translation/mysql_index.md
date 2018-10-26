@@ -147,10 +147,8 @@
 	* 索引对 Min/Max 聚集函数有帮助，当然也只对这俩有作用；
 		- SELECT MAX(ID) FROM TBL;
 		- SELECT MAX(SALARY) FROM EMPLOYEE GROUP BY DEPT_ID：
-
-		>
-		- Will benefit from (DEPT_ID,SALARY) index;
-		- “Using index for group-by”
+			- Will benefit from (DEPT_ID,SALARY) index;
+			- “Using index for group-by”
 
 2. 索引和 JOIN
 	* 在 MySQL 中使用 join 会导致嵌套循环，例如下面语句会遍历 POSTS 表找到 Peter 的所有文章，然后根据找到的文章从 COMMENTS 表中找到该文章的索引评论；
