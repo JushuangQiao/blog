@@ -138,15 +138,15 @@
 
 1. [覆盖索引](https://yq.aliyun.com/articles/62419):对特定的查询使用索引，而不是对索引类型使用索引；
 2. 仅仅读取索引，而不是读数据：索引比数据小；
-3. SELECT STATUS FROM ORDERS WHERE CUSTOMER_ID=123 使用索引 KEY(CUSTOMER_ID,STATUS)；
+3. <font color=#FF4500>SELECT STATUS FROM ORDERS WHERE CUSTOMER_ID=123</font> 使用索引 KEY(CUSTOMER_ID,STATUS)；
 4. 通过索引读取数据是有顺序的，而通过数据指针读取数据经常是随机的。
 
 ### 17. 特定优化
 
 1. Min/Max 优化
 	* 索引对 Min/Max 聚集函数有帮助，当然也只对这俩有作用；
-		- SELECT MAX(ID) FROM TBL;
-		- SELECT MAX(SALARY) FROM EMPLOYEE GROUP BY DEPT_ID：
+		- <font color=#BA55D3>SELECT MAX(ID) FROM TBL</font>;
+		- <font color=#FF4500>SELECT MAX(SALARY) FROM EMPLOYEE GROUP BY DEPT_ID</font>：
 			- Will benefit from (DEPT_ID,SALARY) index;
 			- “Using index for group-by”
 
@@ -161,8 +161,8 @@
 
 ### 18. 表中存在多个索引
 1. MySQL 中可以存在多个索引：会有索引合并；
-2. SELECT * FROM TBL WHERE A=5 AND B=6：该语句能分别使用在 A 和 B 上的索引，但是在 （A,B) 上建立索引是更好的；
-3. SELECT * FROM TBL WHERE A=5 OR B=6：该语句使用两个独立的索引，但不会使用在（A,B) 上建立的索引
+2. <font color=#FF4500>SELECT * FROM TBL WHERE A=5 AND B=6</font>：该语句能分别使用在 A 和 B 上的索引，但是在 （A,B) 上建立索引是更好的；
+3. <font color=#FF4500>SELECT * FROM TBL WHERE A=5 OR B=6</font>：该语句使用两个独立的索引，但不会使用在（A,B) 上建立的索引
 
 ### 19. 前缀索引
 可以在索引最左边一列上建立前缀索引：
@@ -186,13 +186,13 @@
 3. 5.5 之前：在范围内就会读取全部的数据。
 
 ### 22. ICP 举例
-1. SELECT A … WHERE B=2 AND C LIKE “%ill%’
+1. <font color=#FF4500>SELECT A … WHERE B=2 AND C LIKE “%ill%’</font>
 	- MySQL 5.5 and below：
 		* KEY (B) – Traditional. Using index for range only
 		* KEY (B,C,A) - 覆盖索引，用到的列都在索引中；
 	- MySQL 5.6
 		* KEY(B,C)：通过 B 找到数据范围; 会根据 C 读取所有的列查找满足条件的数据；
-2. SELECT * …WHERE A=5 and C=6 ;
+2. <font color=#FF4500>SELECT * …WHERE A=5 and C=6 ;</font>
 	- KEY (A,B,C)：Will scan all index entries with A=5 not all rows。
 
 ### 23. 怎么选择使用哪一个索引？
@@ -206,7 +206,7 @@ EXPLAIN 是一个非常好的查看数据库怎么执行查询的工具：
 - https://dev.mysql.com/doc/refman/5.5/en/using-explain.html；
 - 需要记住真是的执行可能和 EXPLAIN 不同
 - 5.6 中可以使用 json 格式化 EXPLAIN 的结果：
-	*  EXPLAIN FORMAT=JSON SELECT * FROM t1 JOIN t2 ON t1.i = t2.i WHERE t1.j > 1 AND t2.j < 3;
+	*  <font color=#FF4500>EXPLAIN FORMAT=JSON SELECT * FROM t1 JOIN t2 ON t1.i = t2.i WHERE t1.j > 1 AND t2.j < 3;</font>
 
 ### 25. 索引策略
 1. 对于关键的查询建立索引，需要整体来看索引，不要单独的看；
@@ -216,27 +216,27 @@ EXPLAIN 是一个非常好的查看数据库怎么执行查询的工具：
 
 ### 26. 索引示例
 1. 索引要有利于多个查询：
-	- SELECT * FROM TBL WHERE A=5 AND B=6
-	- SELECT * FROM TBL WHERE A>5 AND B=6
+	- <font color=#48D1CC>SELECT * FROM TBL WHERE A=5 AND B=6</font>
+	- <font color=#FF4500>SELECT * FROM TBL WHERE A>5 AND B=6</font>
 	- KEY (B,A) Is better for such query mix
 2. 把最有选择性的条件放在索引第一位；
 3. 对于非关键查询，可以不增加索引，索引太多会影响性能。
 
 ### 27. 技巧
 1. 假设索引的顺序是 KEY(A,B)
-	- SELECT * FROM TBL WHERE A BETWEEN 2 AND 4 AND B=5：只会用到索引的第一部分；
-	- SELECT * FROM TBL WHERE A IN (2,3,4) AND B=5：会用到整个索引。
+	- <font color=#FF0000>SELECT * FROM TBL WHERE A BETWEEN 2 AND 4 AND B=5</font>：只会用到索引的第一部分；
+	- <font color=#48D1CC>SELECT * FROM TBL WHERE A IN (2,3,4) AND B=5</font>：会用到整个索引。
 
 2. 增加 FAKE 过滤，例如 KEY(GENDER,CITY)，想要只使用一个索引：
-	- SELECT * FROM PEOPLE WHERE CITY=“NEW YORK”：不会用到索引；
-	- SELECT * FROM PEOPLE WHERE GENDER IN (“M”,”F”) AND CITY=“NEW YORK”：会使用索引；
+	- <font color=#8470FF>SELECT * FROM PEOPLE WHERE CITY=“NEW YORK”</font>：不会用到索引；
+	- <font color=#FF0000>SELECT * FROM PEOPLE WHERE GENDER IN (“M”,”F”) AND CITY=“NEW YORK”</font>：会使用索引；
 	- 这个技巧对于低选择的列非常有用，例如性别、状态、布尔类型等。
 
 	> 个人理解：对于 key，如果想使用后面的列，要想走索引的话，可以把前面的列全部列出来，当然，前面的列的可能数最好比较小。
 
 3. 文件排序，例如只有 KEY(A,B):
-	- SELECT * FROM TBL WHERE A IN (1,2) ORDER BY B LIMIT 5:不会使用索引；
-	- (SELECT * FROM TBL WHERE A=1 ORDER BY B LIMIT 5) UNION ALL (SELECT * FROM TBL WHERE A=2 ORDER BY B LIMIT 5) ORDER BY B LIMIT 5：会用到索引，排序只会排列 10 行。
+	- <font color=#4169E1>SELECT * FROM TBL WHERE A IN (1,2) ORDER BY B LIMIT 5 </font>: 不会使用索引；
+	- <font color=#FF0000>(SELECT * FROM TBL WHERE A=1 ORDER BY B LIMIT 5) UNION ALL (SELECT * FROM TBL WHERE A=2 ORDER BY B LIMIT 5) ORDER BY B LIMIT 5</font>：会用到索引，排序只会排列 10 行。
 
 ## 联系人
 Email: pz@percona.com
