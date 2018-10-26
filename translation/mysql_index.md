@@ -235,8 +235,11 @@ EXPLAIN 是一个非常好的查看数据库怎么执行查询的工具：
 	> 个人理解：对于 key，如果想使用后面的列，要想走索引的话，可以把前面的列全部列出来，当然，前面的列的可能数最好比较小。
 
 3. 文件排序，例如只有 KEY(A,B):
+
+    ```html
 	- <font color=#4169E1>SELECT * FROM TBL WHERE A IN (1,2) ORDER BY B LIMIT 5 </font>: 不会使用索引；
 	- <font color=#FF0000>(SELECT * FROM TBL WHERE A=1 ORDER BY B LIMIT 5) UNION ALL (SELECT * FROM TBL WHERE A=2 ORDER BY B LIMIT 5) ORDER BY B LIMIT 5</font>：会用到索引，排序只会排列 10 行。
+    ```
 
 ## 联系人
 Email: pz@percona.com
