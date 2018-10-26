@@ -198,4 +198,47 @@
 	- KEY (A,B,C)：Will scan all index entries with A=5 not all rows。
 
 ### 23. 怎么选择使用哪一个索引？
+1. 对于每一个查询动态的选择索引：查询文本中的常量非常重要；
+2. 通过下潜到表中，估算每个索引需要问访问的列数；
+3. 使用基数统计，这个会分析表的更新。
 
+### 24. 用 EXPLAIN
+EXPLAIN 是一个非常好的查看数据库怎么执行查询的工具：
+
+- https://dev.mysql.com/doc/refman/5.5/en/using-explain.html；
+- 需要记住真是的执行可能和 EXPLAIN 不同
+- 5.6 中可以使用 json 格式化 EXPLAIN 的结果：
+	*  EXPLAIN FORMAT=JSON SELECT * FROM t1 JOIN t2 ON t1.i = t2.i WHERE t1.j > 1 AND t2.j < 3;
+
+### 25. 索引策略
+1. 对于关键的查询建立索引，需要整体来看索引，不要单独的看；
+2. 最好的对于 WHERE 和 JOIN 的所有查询条件使用索引，至少也是大部分条件；
+3. 多数情况下拓展现有索引，不要新建索引；
+4. 作出改变的时候，验证一下性能的影响，把所有的查询都执行一遍。
+
+### 26. 索引示例
+1. 索引要有利于多个查询：
+	- SELECT * FROM TBL WHERE A=5 AND B=6
+	- SELECT * FROM TBL WHERE A>5 AND B=6
+	- KEY (B,A) Is better for such query mix
+2. 把最有选择性的条件放在索引第一位；
+3. 对于非关键查询，可以不增加索引，索引太多会影响性能。
+
+### 27. 技巧
+1. 假设索引的顺序是 KEY(A,B)
+	- SELECT * FROM TBL WHERE A BETWEEN 2 AND 4 AND B=5：只会用到索引的第一部分；
+	- SELECT * FROM TBL WHERE A IN (2,3,4) AND B=5：会用到整个索引。
+
+2. 增加 FAKE 过滤，例如 KEY(GENDER,CITY)，想要只使用一个索引：
+	- SELECT * FROM PEOPLE WHERE CITY=“NEW YORK”：不会用到索引；
+	- SELECT * FROM PEOPLE WHERE GENDER IN (“M”,”F”) AND CITY=“NEW YORK”：会使用索引；
+	- 这个技巧对于低选择的列非常有用，例如性别、状态、布尔类型等。
+
+	> 个人理解：对于 key，如果想使用后面的列，要想走索引的话，可以把前面的列全部列出来，当然，前面的列的可能数最好比较小。
+
+3. 文件排序，例如只有 KEY(A,B):
+	- SELECT * FROM TBL WHERE A IN (1,2) ORDER BY B LIMIT 5:不会使用索引；
+	- (SELECT * FROM TBL WHERE A=1 ORDER BY B LIMIT 5) UNION ALL (SELECT * FROM TBL WHERE A=2 ORDER BY B LIMIT 5) ORDER BY B LIMIT 5：会用到索引，排序只会排列 10 行。
+
+## 联系人
+Email: pz@percona.com
