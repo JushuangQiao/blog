@@ -198,3 +198,41 @@ def decrypt(app_id, session_key, encrypted_data, iv):
 def _unpad(s):
     return s[:-ord(s[len(s)-1:])]
 ```
+
+## 2.4 把小程序二维码转化成图片
+
+[官方文档](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/qr-code.html)
+
+```python
+import cString
+import requests
+
+from tornado.web import authenticated, RequestHandler
+
+URL = 'https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode'
+
+def fetch_qrcode_image(path, width=430):
+    params = {'access_token': 'access_token'}
+    json_data = {
+        'width': width,
+        'path': path
+    }
+    res = requests.post(URL, params=params, json=json_data, timeout=3, verify=False)
+    qrcode_image = cStringIO.StringIO(res.content)
+    return qrcode_image.getvalue()
+
+# tornado
+class QRCodeHandler(RequestHandler):
+
+    def get(self):
+        path = self.get_argument('path')
+        if not path:
+            self.set_status(404)
+            return
+        qr_code = fetch_qrcode_image(path)
+        if not qr_code:
+            self.set_status(404)
+            return
+        self.set_header('Content-Type', 'image/jpeg')
+        self.finish(qr_code)
+```
