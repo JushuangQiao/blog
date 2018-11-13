@@ -12,7 +12,6 @@
 > #### d [短链接系统的实现思考](./system/short_url.md)
 
 ### 3. [Python 库以及使用](/python_library)
-> #### a [用 Python 实现一个加解密方法](./library/)
 
 ### 4. [MySQL](/mysql)
 > #### a [如何快速的实现大表读全表的一个思路](./mysql/big_table.md)
