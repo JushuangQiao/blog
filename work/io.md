@@ -38,3 +38,19 @@ def get_following_info():
 当然，如果一个用户关注了很多的好友，可能没办法一次获取到所有的好友消息，这时候就需要分页了。
 
 ### 场景2: 批量查询数据库数据
+一般情况下，应用服务器和数据库存储并不是在同一台服务器上，如果要进行数据库的查询操作，很多时候就需要通过网络来进行。
+
+对于 MySQL 来说，数据是按照主键来进行物理存储的，如果表中没有主键，则会设置一个默认的主键。二级索引都会查询到主键之后，再次回表查询。也就是说，根据主键，可以认为更快的进行数据的查询。对于下面的表，如果我们想进行表的扫描，获取到 user_id，则可以首先获取到表的最大和最小主键 ID，然后批量获取两个 ID 之间的数据。
+
+```SQL
+CREATE TABLE `user_name` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `user_id` bigint(20) NOT NULL COMMENT ' 用户 id',
+  `user_name` varchar(64) NOT NULL COMMENT '姓名',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unq_uid` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+select max(id) from `user_name`;
+select min(id) from `user_name`;
+```
