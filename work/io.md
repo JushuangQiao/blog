@@ -25,7 +25,7 @@ def get_following_info():
 	return user_infos
 ```
 
-我们知道，和 IO 比起来，一般来说，CPU 计算要快得多，所以，针对以上代码，我们可以使用批量接口，直接获取到所有的用户信息。
+我们知道，和 IO 比起来，一般来说，内存计算要快得多，所以，针对以上代码，我们可以使用批量接口，直接获取到所有的用户信息。
 
 ```python
 def get_following_info():
