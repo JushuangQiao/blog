@@ -64,3 +64,127 @@ Out[58]: 4576730864
 
 *回顾总结*: 关于内存管理，个人觉得这篇比较好，[点击链接](http://www.cnblogs.com/vamei/p/3232088.html)，说的比较明白。
 垃圾回收的三种机制是互相关联的，可以直接搜索找到合适自己的答案。
+
+#### 4. 编程实现二分查找？
+
+当时写的代码如下
+
+```python
+def b_search(data, k):
+    if not data:
+        return -1
+    left, right = 0, len(data) - 1
+    while left <= right:
+        mid = (left + right) / 2
+        if data[mid] == k:
+            return mid
+        elif data[mid] > k:
+            right = mid - 1
+        else:
+            left = mid + 1
+    return -1
+```
+
+追问，如果给定的数组中有多个重复值，如何进行查找？描述一下思路。当时理解成查找数组中这个值的始末索引了，回答的是使用二分法分别查找始末索引就可以了。面试官说直接使用二分法就可以。额？
+
+#### 5. 经典问题，一次可以上1个台阶，也可以上2个...n个，问一共有多少种上法
+
+```python
+def fib(n):
+    a, b = 1, 2
+    for i in range(n):
+        yield a
+        a, b = b, 2 * b
+```
+
+#### 6. 当从b模块中导入a，运行b，会输出什么？a,b内容如下所示
+
+```python
+# a.py
+print 'm'
+
+
+def f():
+    print 'fm'
+
+
+class A(object):
+    print 'A.m'
+
+    def fa(self):
+        print 'A.f.m'
+
+# b.py
+
+import a
+```
+
+运行b后，输入结果如下所示：
+> m<br>
+> A.m
+
+解释：见 [这里](https://github.com/JushuangQiao/blog/blob/master/python/module_init.md)
+
+#### 7.说一下对装饰器的理解，原理是什么？如何使用装饰器实现求函数的执行时间？
+
+*回顾总结*：装饰器原理是使用了闭包实现的，是一种面向切面编程的模式（对设计模式理解不多，下一步需要抽时间学习设计模式了！）。对装饰器实现的执行时间，代码如下所示：（Python中有自带的timeit模块用来求执行时间）。
+
+```python
+import time
+from functools import wraps
+
+
+def timeit(func):
+    @wraps(func)
+    def wrapper():
+        start = time.clock()
+        func()
+        end = time.clock()
+        print 'used:', end - start
+
+    return wrapper
+
+
+@timeit
+def f():
+    time.sleep(3)
+
+f()
+```
+
+#### 8.对闭包的理解？
+
+*回顾总结*：闭包（Closure）是词法闭包（Lexical Closure）的简称，是引用了自由变量的函数。这个被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。
+
+#### 9.对函数对象的理解？
+
+*回顾总结*：函数可以赋值给变量、可以作为元素添加到集合对象中、可作为参数值传递给其它函数，还可以当做函数的返回值。对于函数对象的理解，可以看 [这里](https://foofish.net/function-is-first-class-object.html)
+
+#### 10.如何理解Python中一切皆对象？
+
+*回顾总结*：Python中所有的对象都有身份、类型和值。具体内容可以直接搜索，感觉这个 [博客](http://www.cnblogs.com/wangxin37/p/6598466.html) 写的也不错。当然要最好的理解还是看源码。
+
+#### 11. 对协程的理解，协程和线程的区别？
+
+*回顾总结*： 协程是使用生成器实现的，程序员自己来控制。协程适合 I/O 密集型操作，异步功能。
+
+#### 12. 二叉树求深度？
+
+递归思路
+
+```python
+def get_depth(tree):
+    if not tree:
+        return 0
+    if not tree.left and not tree.right:
+        return 1
+    return 1 + max(get_depth(tree.left), get_depth(tree.right))
+```
+
+#### 13. MySQL 索引优化？
+
+*回顾总结*：这个在很多面试中会问到，工作中也会用到，需要认真学好MySQL。关键点：最左匹配，联合索引，在哪种情况下建立索引，B 树原理，explain 查看语句等。网上搜一下挺多内容的，不过还是最好看一下《高性能MySQL》这本书。
+
+#### 14. Redis 缓存，数据类型等？
+
+*回顾总结*：字符串、列表、hash、set、有序集合等。
